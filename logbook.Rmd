@@ -9,15 +9,12 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Importing used library's.
-```{r}
+
+```{r, echo=FALSE}
 library(ggplot2) 
+library(tidyverse)
 ```
 
-Reading the data used for the project.
-```{r}
-data <- read.csv("./data/cirrhosis.csv")
-```
 
 # Cirrhosis prediction
 
@@ -47,33 +44,76 @@ In the fourth stage the liver starts to (acutely) fail and medical intervention 
 The dataset consists of 424 Primary biliary cholangitis patients who where on a trial for D-penicillamine which was placebo controlled. 
 312 of the instances contain complete data as these patients have participated the trial, the remaining individuals did not participate in the trial but consented to have basic measurements taken.
 
-### Attributes
-1. ID: unique identifier
-2. N_Days: number of days between registration and the earlier of death, transplantation, or study analysis time in July 1986
-3. Status: status of the patient C (censored), CL (censored due to liver tx), or D (death)
-4. Drug: type of drug D-penicillamine or placebo
-5. Age: age in [days]
-6. Sex: M (male) or F (female)
-7. Ascites: presence of ascites N (No) or Y (Yes)
-  + The accumulation of fluid in the peritoneal cavity
-8. Hepatomegaly: presence of hepatomegaly N (No) or Y (Yes)
-  + An enlarged liver
-9. Spiders: presence of spiders N (No) or Y (Yes)
-10. Edema: presence of edema N (no edema and no diuretic therapy for edema), S (edema present without diuretics, or edema resolved by diuretics), or Y (edema despite diuretic therapy)
-11. Bilirubin: serum bilirubin in [mg/dl]
-12. Cholesterol: serum cholesterol in [mg/dl]
-13. Albumin: albumin in [gm/dl]
-14. Copper: urine copper in [ug/day]
-15. Alk_Phos: alkaline phosphatase in [U/liter]
-16. SGOT: SGOT in [U/ml]
-17. Triglycerides: triglicerides in [mg/dl]
-18. Platelets: platelets per cubic [ml/1000]
-19. Prothrombin: prothrombin time in seconds [s]
-20. Stage: histologic stage of disease (1, 2, 3, or 4)
+### Loading the data
+Reading the data used for the project.
+```{r}
+data <- read.csv("./data/cirrhosis.csv")
+```
+
+### Codebook
+```{r}
+codebook <- read.csv("./data/codebook.csv", header = T, sep = ";", row.names = 1)
+codebook
+```
+
+## Research question
+
+"Can the stage of cirrhosis be determined in Primary biliary cholangitis patients using basic measurements and non-invasive testing of the blood and urine?". 
+
+### Setup of the project
+For this project we constructed a machine-learning (ML) algorithm that tries to determine the stage, and thus the severity of cirrhosis in PBC patients. This will involve supervised learning where the class variable is the stage of the disease
 
 
+## Data preprocessing
 
+### Missing class variables
+Since the project uses supervised learning techniques, the rows without a class variable, eg: NA's, serve no purpose for training the algorithm and can thus be removed.
 
 ```{r}
-ggplot(data, aes(x=Stage)) +geom_bar()
+sum(is.na(data$Stage)) #checking the amount of na's in the stage collumn
+data <- data[!is.na(data$Stage),] #drop the rows with no class variable
 ```
+
+We identified six rows with no class variable, exactly as the description of the dataset noted. 
+We removed the six instances
+
+
+## Basic statistics
+
+### Summary
+
+First off we will create a summary for all numeric atributes to have a look at their distribution.
+```{r}
+summary(data[,c(2,5,11,12:19)])
+```
+
+We notice a lot of missing values due to a large number of patients not being involved in the whole screening but just provided basic measurements.
+The extend to which these missing values will influence the accuracy of the model to be produced is large when about twenty percent of the patients miss a value.
+For that reason the choice has been made to for the time being not remove any instances based on missing values.
+
+
+### Normilization
+
+```{r}
+data[,c(11,12:19)] <- lapply(data[,c(11,12:19)], scale)
+```
+
+```{r}
+boxplot(data[,c(11,12:19)], las = 2)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
