@@ -1,0 +1,21 @@
+﻿var_name;unit;type;description
+ID;;int;unique identifier
+N_Days;days;int;number of days between registration and the earlier of death, transplantation, or study analysis time in July 1986
+Status;;str;status of the patient C (censored), CL (censored due to liver tx), or D (death)
+Drug;;boolean;type of drug D-penicillamine or placebo
+Age;days;int;age in days
+Sex;;str; M (male) or F (female)
+Ascites;;boolean;presence of ascites N (No) or Y (Yes), the accumulation of fluid in the peritoneal cavity
+Hepatomegaly;;boolean;presence of hepatomegaly N (No) or Y (Yes), an enlarged liver
+Spiders;;boolean;presence of spiders N (No) or Y (Yes), spider veins are swollen, twisted veins that usually appear on the legs
+Edema;;str; presence of edema N (no edema and no diuretic therapy for edema), S (edema present without diuretics, or edema resolved by diuretics), or Y (edema despite diuretic therapy)
+Bilirubin;mg/dl;float;serum bilirubin 
+Cholesterol;mg/dl;float;serum cholesterol
+Albumin;gm/dl;float;albumin
+Copper;ug/day;float;urine copper
+Alk_Phos;U/liter;float;alkaline phosphatase
+SGOT;U/ml;float;serum glutamic-oxaloacetic transaminase, SGOT is a protein made by liver cells
+Tryglicerides;mg/dl;float;triglicerides, a type of fat (lipid) found in your blood
+Platelets;ml/1000;float;platelets per cubic, the cells that circulate within our blood and bind together when they recognize damaged blood vessels.
+Prothrombin;seconds;float;prothrombin time in seconds,  a test to evaluate blood clotting
+Stage;;int;histologic stage of disease (1, 2, 3, or 4)
