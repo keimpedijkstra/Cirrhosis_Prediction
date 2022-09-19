@@ -58,7 +58,7 @@ codebook
 
 ## Research question
 
-"Can the stage of cirrhosis be determined in Primary biliary cholangitis patients using basic measurements and non-invasive testing of the blood and urine?". 
+"Can the stage of cirrhosis be determined with basic measurements and non-invasive testing of the blood and urine using machine learning?". 
 
 ### Setup of the project
 For this project we constructed a machine-learning (ML) algorithm that tries to determine the stage, and thus the severity of cirrhosis in PBC patients. This will involve supervised learning where the class variable is the stage of the disease
