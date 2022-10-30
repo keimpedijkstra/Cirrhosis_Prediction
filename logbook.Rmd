@@ -11,8 +11,18 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+\centering
 
-```{r, echo=FALSE}
+\raggedright
+
+\clearpage
+
+\tableofcontents
+
+\newpage
+
+
+```{r, echo=FALSE, include=FALSE}
 library(ggplot2) 
 library(tidyverse)
 library(scales)
@@ -73,11 +83,15 @@ For this project we constructed a machine-learning (ML) algorithm that tries to 
 
 ## Data exploration and preprocessing
 
+
 ### Basic statistics
+
 
 #### Numeric data
 
+
 ##### Summary
+
 
 First off we will create a summary for all numeric attributes to have a look at their distribution.
 ```{r}
@@ -89,6 +103,7 @@ The extend to which these missing values will influence the accuracy of the mode
 For that reason the choice has been made to for the time being not remove any instances based on missing values.
 
 ##### Log transformation
+
 If we look at the summaries we see differences between maximum- and mean values in the order of hundreds. Therefore, to reduce the amount of skewness, it is wise to log-transform the data to make our analysis more valid.
 
 ```{r}
@@ -96,6 +111,7 @@ data[,c(11,12:19)] <- log(data[,c(11,12:19)])
 ```
 
 ##### Normilization
+
 To compare the numeric attributes with each other we first have to normalize the data, we do this by scaling.
 The boxplot below shows all the normalized numeric values in comparison to each other.
 
@@ -105,9 +121,11 @@ data[,c(11,12:19)] <- lapply(data[,c(11,12:19)], scale)
 
 ##### Distribution of numeric attributes
 
+
 ```{r}
-boxplot(data[,c(11,12:19)], las = 2, col = hue_pal()(20),outpch = 25, outbg = hue_pal()(20), cex.axis = 0.7, xlab = "Attributes", ylab = "Scaled values", main = "Distribution of numeric attributes")
+boxplot(data[,c(11,12:19)], las = 2, col = hue_pal()(20),outpch = 25, outbg = hue_pal()(20), cex.axis = 0.7, xlab = "Attributes", ylab = "Scaled values (log)", main = "Distribution of numeric attributes")
 ```
+
 
 We see a number off nummbers that remain skewed with either outliers on the left or right side of the distribution.
 The albumin and platelet attributes seem to be skewed to the left and the alkaline phosphate and prothrombin attributes seem to be skewed to the right eventhough the data has been logscaled.
@@ -118,7 +136,7 @@ This does not mean the data is of less quality, we hope for an scenario in which
 To get a sense of the nominal attributes data we create a barplot for all types.
 
 
-```{r}
+```{r, echo=FALSE}
 barplot(table(data$Drug), col = hue_pal()(20), ylab = "Number of instances", xlab = "Type of drug", main = "Number of instances on drug type")
 barplot(table(data$Sex), col = hue_pal()(20), ylab = "Number of instances", xlab = "gender", main = "Gender of the participants")
 barplot(table(data$Ascites), col = hue_pal()(20), ylab = "Number of instances", xlab = "Yes or No", main = "presence of ascites")
@@ -134,13 +152,14 @@ As expected the difference between patients on placebo and the actual drug is ab
 
 ### Correlations
 
+
 #### Protthrombin time and the prevalence of ascites
 From the literature we can derive that a prolonged prothrombin time is a useful value to identify the prevalence of ascites.
 Therefore we plot the prothrombin time against the the presence of ascites in a violin plot.
 
-```{r}
+```{r, echo=FALSE}
 ggplot(data = na.omit(data)) +
-  aes(x = Prothrombin, y = Ascites)  + geom_violin()  + geom_jitter()
+  aes(x = Prothrombin, y = Ascites)  + geom_violin()  + geom_jitter()+ ggtitle("Prothrombin time in patients with of without ascites") + xlab("Prothrombin time")
 ```
 
 We see that the patients who are not diagnosed with ascites tend to have a lower prothrombin time then their diagnosed counterparts.
@@ -157,10 +176,11 @@ So the prothrombin time might be an useful indicator of the presence of acsites 
 
 #### Copper and D-penicillamine
 
+
 The D-penicillamine drug is a chelating agents, meaning it binds heavy metals making it possible to excrete them through urine.
 To see whether the drug affects the concentration of copper in urine we plotted the copper concentration against the time between registration and analysis.
 
-```{r}
+```{r, echo=FALSE}
 real <- subset(data,data$Drug == "D-penicillamine", select = c(N_Days, Copper) )
 placebo <- subset(data,data$Drug == "Placebo", select = c(N_Days, Copper) )
 ggplot(real, aes(x=N_Days, y=Copper)) + geom_point() + geom_smooth(method="auto", se=TRUE, fullrange=FALSE, level=0.95) + ggtitle("Copper concentration in urine in D-penicillamine group")
@@ -172,12 +192,13 @@ This is useful information because if it were to affect the concentration it mig
 
 ##### Ascites and edema
 
-```{r}
+```{r, echo=FALSE}
 ct <-table(data$Ascites, data$Edema, dnn=c("Ascites","Edema"))
 chi_s <- chisq.test(ct)
 chi_s
 corrplot(chi_s$residuals, is.cor = FALSE, method = 'circle', addgrid.col = 'white', addCoef.col = 'white', cl.pos = 'b', title = "Ascites(y) in relation toEdema(x)" )
 ```
+
 
 The plot above shows the relationship between the presence of ascites (plotted on the x-axis) and the presence of edema.
 When a number is below zero it means the values repel, they tend not to occur in the same instance.
@@ -191,6 +212,7 @@ We can draw the same conclusions from the chi-squared test, returning us a p-val
 #### Class variables
 
 ##### Missing class variables
+
 Since the project uses supervised learning techniques, the rows without a class variable, eg: NA's, serve no purpose for training the algorithm and can thus be removed.
 
 ```{r}
@@ -203,18 +225,22 @@ We removed the six instances.
 
 ##### Distribution of class variables
 
-```{r}
-barplot(table(data$Stage), col = hue_pal()(20), ylab = "Number of instances", xlab = "Stage of cirrhosis", main = "Distribution of class variables")
+
+```{r, echo=FALSE}
+barplot(table(data$Stage), col = hue_pal()(20), ylab = "Number of instances", xlab = "Stage of cirrhosis", main = "Distribution of target variables")
 ```
+
 
 Because early stage cirrhosis is very hard to diagnose there are significantly less patients labeled with stage one compared to the other stages.
 Ideally we would like for all the stages to have about the same amount of instances, the level to which the model will be affected by the skewed data remains to be seen.
 
 ##### Significant differences between attributes
 
+
 ###### Copper 
 
-```{r}
+
+```{r, echo=FALSE}
 boxplot(data$Copper ~ data$Stage, col = hue_pal()(20),outpch = 25, outbg = hue_pal()(20), cex.axis = 0.7, xlab = "Stages of cirhosis", ylab = "Copper concentration (log)", main = "Copper concentration in urine by stage")
 res <- aov(Copper ~ factor(Stage), data = na.omit(data))
 summary(res)
@@ -226,22 +252,27 @@ Except for the first stage, copper concentrations tend to increase as the cirrho
 If we look at the adjusted p-values from our anova and the following Tukey multiple pairwise-comparison, we see significant differences in all except the first two.
 The analysis factors in the differences of sample sizes, but because the early stage of cirrhosis is hard to diagnose this amount of data might be insufficient.
 
+
 ###### Bilirubin
 
-```{r}
-boxplot(data$Bilirubin ~ data$Stage, col = hue_pal()(20),outpch = 25, outbg = hue_pal()(20), cex.axis = 0.7, xlab = "Stages of cirhosis", ylab = "Bilirubin concentration (log)", main = "Bilirubin concentration in the blood by stage")
+
+```{r, echo=FALSE}
+boxplot(data$Bilirubin ~ data$Stage, col = hue_pal()(20),outpch = 25, outbg = hue_pal()(20), cex.axis = 0.7, xlab = "Stage of cirhosis", ylab = "Bilirubin concentration (log)", main = "Bilirubin concentration in the blood by stage")
 res <- aov(Bilirubin ~ factor(Stage), data = na.omit(data))
 summary(res)
 TukeyHSD(res)
 ```
 
+
 Bilirubin concentrations also increase with the progress of the hepatic disease.
 We again notice the first stage only showing significant differences with the fourth stage.
 But the overall pattern is more distinct and lets us to believe this is a meaningfull correlation.
 
+
 ###### Hepatomegaly
 
-```{r}
+
+```{r, echo=FALSE}
 ct <-table(data$Stage, data$Hepatomegaly, dnn=c("Stage","Hepatomegaly"))
 chi_s <- chisq.test(ct)
 chi_s
@@ -257,7 +288,7 @@ The chi-squared test confirms with a value of 2.349e-15, far below the bar of si
 
 ###### Spider veins
 
-```{r}
+```{r, echo=FALSE}
 ct <-table(data$Stage, data$Spiders, dnn=c("Stage","Spiders"))
 chi_s <- chisq.test(ct)
 chi_s
@@ -273,10 +304,13 @@ Again a very low p-value from the chi-squared test at 3.644e-06.
 
 #### Clustering analysis
 
+
 We will preform a k-means clustering on all the numerical data to see if it cat already be categorized in a meaningful way.
 Before we will we can do the actual clustering we need to determine the amount of clusters we want to divide the data into.
 
 ##### Determining amount of clusters 
+
+
 ```{r}
 fviz_nbclust(na.omit(data[11:19]), kmeans,
   nstart = 25,
@@ -286,7 +320,10 @@ fviz_nbclust(na.omit(data[11:19]), kmeans,
   labs(subtitle = "Gap statistic method")
 ```
 
-To determine the amount of clusters we used the gap statistic method
+To determine the amount of clusters we used the gap statistic method, the highest value suggest the amount we should choose.
+We see a peak at two, this means we should choose two clusters
+
+##### Clustering and visualization
 
 
 ```{r}
@@ -295,7 +332,8 @@ fviz_cluster(km, data = na.omit(data[11:19]))
 ```
 
 
-```{r}
+
+```{r, echo=FALSE}
 cluster_inst <- as.data.frame( as.matrix(km$cluster))
 cluster_inst[2] <- rownames(cluster_inst)
 
@@ -314,6 +352,61 @@ ggplot(cluster_inst, aes(fill=Var1, y=Freq, x=Var2)) +
     geom_bar(position="stack", stat="identity") + ggtitle("Number of instances per cluster per stage") +
   ylab("Frequency") + xlab("Stage") + labs(fill = "cluster")
 ```
+
+In the first plot we see the clusters and the respective instances plotted.
+It is hard to draw conclusions from these kinds of plots, but we do see minimal overlap and therefore distinct groups.
+Looking at the clusters plotted against the different stages in a barplot, we see no obvious correlation between the two.
+So we can conclude the k-means clustering of the nemeric variables alone cannot give an indication of the stage of cirrhosis
+
+
+
+```{r}
+# data <- read.csv("./data/cirrhosis.csv")
+# data <- data[!is.na(data$Stage),]
+data <- data [,2:20]
+data_single_class <- data
+
+data_single_class["Stage"][data_single_class["Stage"] == 1] <- "no"
+data_single_class["Stage"][data_single_class["Stage"] == 2] <- "no"
+data_single_class["Stage"][data_single_class["Stage"] == 3] <- "no"
+data_single_class["Stage"][data_single_class["Stage"] == 4] <- "yes"
+
+data["Stage"][data["Stage"] == 1] <- "one"
+data["Stage"][data["Stage"] == 2] <- "two"
+data["Stage"][data["Stage"] == 3] <- "three"
+data["Stage"][data["Stage"] == 4] <- "four"
+data_no_na <- data[complete.cases(data),]
+
+
+write.table(data, "C:/Users/keimp/Cirrhosis_Prediction/data/data_eda.csv", sep = ",", na = "", row.names = F)
+write.table(data_no_na, "C:/Users/keimp/Cirrhosis_Prediction/data/data_eda_no_na.csv", sep = ",", na = "", row.names = F)
+
+
+```
+
+
+
+
+```{r}
+comparison <- read.csv("./data/test_results/comparison_results.csv", sep=";")
+rownames(comparison) <- comparison[,1]
+comparison[,1] <- NULL
+comparison
+```
+
+```{r}
+comparison_numeric <- read.csv("./data/test_results/comparison_results_numeric.csv", sep=";")
+rownames(comparison_numeric) <- comparison_numeric[,1]
+comparison_numeric[,1] <- NULL
+comparison_numeric <- t(comparison_numeric)
+comparison_numeric <- as.data.frame( comparison_numeric)
+
+ggplot(data=comparison_numeric, aes(x=rownames(comparison_numeric), y=percent_correct, fill=rownames(comparison_numeric))) +
+  geom_bar(stat="identity") + theme(axis.text.x = element_blank()) + scale_fill_manual(values=c(hue_pal()(20))) + geom_hline(yintercept = comparison_numeric[1,1], linetype = "dashed")
+```
+
+
+
 
 
 
