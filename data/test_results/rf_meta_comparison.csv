@@ -1,0 +1,3 @@
+﻿;random_forest;bagging;stacking;boosting
+percent_correct;49.91;49.78;37.63;49.56
+area_under_roc;0.80;0.80;0.50;0.79
