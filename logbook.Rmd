@@ -1,6 +1,6 @@
 ---
-title: "EDA"
-author: "keimpe dijkstra"
+title: "Logbook"
+author: "Keimpe Dijkstra"
 date: "14-9-2022"
 output:
   pdf_document: default
@@ -30,32 +30,11 @@ library(gplots)
 library(corrplot)
 library(plyr)
 library(factoextra)
+library(knitr)
 ```
 
 
 # Cirrhosis prediction
-
-
-## Introduction Cirrhosis
-
-Cirrhosis is a serious dissease involving scarring, also called fibrosis, of the liver. 
-The scarring develops due to sustained liver damage either by diseases like hepatitis B or C or by alcohol abuse.
-Cirrhosis consists of four stages, the third of which is also referred to as cirrhosis.
-
-### Stage 1
-The first stage is often undiagnosed and is characterized by inflammation of the liver or bile duct, but this stage is critical because stage 1 is curable and so progression to stage 2 can be prevented.
-
-### Stage 2
-In the second stage the scarring and inflammation is starting to obstruct the the bloodflow within the liver.
-The liver is not able to function properly but with treatment the liver may be able to recover slightly and further damage can be prevented.
-
-### Stage 3
-Cirrhosis occurs in the third stage, the liver is permanently scarred and thus scar tissue starts to replace healthy tissue causing it to become hard and lumpy. 
-Blood is prevented to enter the liver and may leak into the spleen.
-
-### Stage 4
-In the fourth stage the liver starts to (acutely) fail and medical intervention is needed to prevent fatality.
-
 
 ## The dataset
 The dataset consists of 424 Primary biliary cholangitis patients who where on a trial for D-penicillamine which was placebo controlled. 
@@ -70,7 +49,7 @@ data <- read.csv("./data/cirrhosis.csv")
 ### Codebook
 ```{r}
 codebook <- read.csv("./data/codebook.csv", header = T, sep = ";", row.names = 1)
-codebook
+kable(codebook)
 ```
 
 ## Research question
@@ -87,10 +66,10 @@ For this project we constructed a machine-learning (ML) algorithm that tries to 
 ### Basic statistics
 
 
-#### Numeric data
+### Numeric data
 
 
-##### Summary
+### Summary
 
 
 First off we will create a summary for all numeric attributes to have a look at their distribution.
@@ -102,7 +81,7 @@ We notice a lot of missing values due to a large number of patients not being in
 The extend to which these missing values will influence the accuracy of the model to be produced is large when about twenty percent of the patients miss a value.
 For that reason the choice has been made to for the time being not remove any instances based on missing values.
 
-##### Log transformation
+### Log transformation
 
 If we look at the summaries we see differences between maximum- and mean values in the order of hundreds. Therefore, to reduce the amount of skewness, it is wise to log-transform the data to make our analysis more valid.
 
@@ -110,7 +89,7 @@ If we look at the summaries we see differences between maximum- and mean values 
 data[,c(11,12:19)] <- log(data[,c(11,12:19)])
 ```
 
-##### Normilization
+### Normilization
 
 To compare the numeric attributes with each other we first have to normalize the data, we do this by scaling.
 The boxplot below shows all the normalized numeric values in comparison to each other.
@@ -119,7 +98,7 @@ The boxplot below shows all the normalized numeric values in comparison to each 
 data[,c(11,12:19)] <- lapply(data[,c(11,12:19)], scale)
 ```
 
-##### Distribution of numeric attributes
+### Distribution of numeric attributes
 
 
 ```{r}
@@ -131,12 +110,12 @@ We see a number off nummbers that remain skewed with either outliers on the left
 The albumin and platelet attributes seem to be skewed to the left and the alkaline phosphate and prothrombin attributes seem to be skewed to the right eventhough the data has been logscaled.
 This does not mean the data is of less quality, we hope for an scenario in which these outliers may help catagorize the patients in the cirrhosis stages.
 
-#### Nominal data
+### Nominal data
 
 To get a sense of the nominal attributes data we create a barplot for all types.
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, out.width="45%"}
 barplot(table(data$Drug), col = hue_pal()(20), ylab = "Number of instances", xlab = "Type of drug", main = "Number of instances on drug type")
 barplot(table(data$Sex), col = hue_pal()(20), ylab = "Number of instances", xlab = "gender", main = "Gender of the participants")
 barplot(table(data$Ascites), col = hue_pal()(20), ylab = "Number of instances", xlab = "Yes or No", main = "presence of ascites")
@@ -174,7 +153,7 @@ From the output we can see that the t test-statistic is 5.8423 and the correspon
 Since this p-value is less than .05, we can reject the null hypothesis and conclude that there is a statistically significant difference in mean scores between the two groups.
 So the prothrombin time might be an useful indicator of the presence of acsites and then maybe even in our model for determining the stage of cirrhosis.
 
-#### Copper and D-penicillamine
+### Copper and D-penicillamine
 
 
 The D-penicillamine drug is a chelating agents, meaning it binds heavy metals making it possible to excrete them through urine.
@@ -190,7 +169,7 @@ ggplot(placebo, aes(x=N_Days, y=Copper)) + geom_point() + geom_smooth(method="au
 Although the data points are a bit scattered the trend seems to follow a very similar line.
 This is useful information because if it were to affect the concentration it might create a bias in our ML model.
 
-##### Ascites and edema
+### Ascites and edema
 
 ```{r, echo=FALSE}
 ct <-table(data$Ascites, data$Edema, dnn=c("Ascites","Edema"))
@@ -209,9 +188,9 @@ This is most prevalent in edema patients who did not react to treatment with diu
 We can draw the same conclusions from the chi-squared test, returning us a p-value smaller than 2.2e-16.
 
 
-#### Class variables
+### Class variables
 
-##### Missing class variables
+### Missing class variables
 
 Since the project uses supervised learning techniques, the rows without a class variable, eg: NA's, serve no purpose for training the algorithm and can thus be removed.
 
@@ -223,7 +202,7 @@ data <- data[!is.na(data$Stage),] #drop the rows with no class variable
 We identified six rows with no class variable, exactly as the description of the dataset noted. 
 We removed the six instances.
 
-##### Distribution of class variables
+### Distribution of class variables
 
 
 ```{r, echo=FALSE}
@@ -234,10 +213,10 @@ barplot(table(data$Stage), col = hue_pal()(20), ylab = "Number of instances", xl
 Because early stage cirrhosis is very hard to diagnose there are significantly less patients labeled with stage one compared to the other stages.
 Ideally we would like for all the stages to have about the same amount of instances, the level to which the model will be affected by the skewed data remains to be seen.
 
-##### Significant differences between attributes
+### Significant differences between attributes
 
 
-###### Copper 
+### Copper 
 
 
 ```{r, echo=FALSE}
@@ -253,7 +232,7 @@ If we look at the adjusted p-values from our anova and the following Tukey multi
 The analysis factors in the differences of sample sizes, but because the early stage of cirrhosis is hard to diagnose this amount of data might be insufficient.
 
 
-###### Bilirubin
+### Bilirubin
 
 
 ```{r, echo=FALSE}
@@ -269,7 +248,7 @@ We again notice the first stage only showing significant differences with the fo
 But the overall pattern is more distinct and lets us to believe this is a meaningfull correlation.
 
 
-###### Hepatomegaly
+### Hepatomegaly
 
 
 ```{r, echo=FALSE}
@@ -286,7 +265,7 @@ It is makes sense that the liver enlarges while it is scarring, therefore almost
 The chi-squared test confirms with a value of 2.349e-15, far below the bar of significance at 0.05.
 
 
-###### Spider veins
+### Spider veins
 
 ```{r, echo=FALSE}
 ct <-table(data$Stage, data$Spiders, dnn=c("Stage","Spiders"))
@@ -302,16 +281,16 @@ Here nearly half of the patients in stage four cirrhosis experience spider veins
 Again a very low p-value from the chi-squared test at 3.644e-06.
 
 
-#### Clustering analysis
+### Clustering analysis
 
 
 We will preform a k-means clustering on all the numerical data to see if it cat already be categorized in a meaningful way.
 Before we will we can do the actual clustering we need to determine the amount of clusters we want to divide the data into.
 
-##### Determining amount of clusters 
+### Determining amount of clusters 
 
 
-```{r}
+```{r, echo=FALSE}
 fviz_nbclust(na.omit(data[11:19]), kmeans,
   nstart = 25,
   method = "gap_stat",
@@ -323,10 +302,10 @@ fviz_nbclust(na.omit(data[11:19]), kmeans,
 To determine the amount of clusters we used the gap statistic method, the highest value suggest the amount we should choose.
 We see a peak at two, this means we should choose two clusters
 
-##### Clustering and visualization
+### Clustering and visualization
 
 
-```{r}
+```{r, echo=FALSE}
 km <- kmeans(na.omit(data[11:19]), centers = 2, nstart = 25)
 fviz_cluster(km, data = na.omit(data[11:19]))
 ```
@@ -360,41 +339,24 @@ So we can conclude the k-means clustering of the nemeric variables alone cannot 
 
 
 
-```{r}
+```{r, echo=FALSE}
 # data <- read.csv("./data/cirrhosis.csv")
 # data <- data[!is.na(data$Stage),]
 data <- data [,2:20]
-data_single_class <- data
-
-data_single_class["Stage"][data_single_class["Stage"] == 1] <- "no"
-data_single_class["Stage"][data_single_class["Stage"] == 2] <- "no"
-data_single_class["Stage"][data_single_class["Stage"] == 3] <- "no"
-data_single_class["Stage"][data_single_class["Stage"] == 4] <- "yes"
-
-data["Stage"][data["Stage"] == 1] <- "one"
-data["Stage"][data["Stage"] == 2] <- "two"
-data["Stage"][data["Stage"] == 3] <- "three"
-data["Stage"][data["Stage"] == 4] <- "four"
-data_no_na <- data[complete.cases(data),]
-
-
 write.table(data, "C:/Users/keimp/Cirrhosis_Prediction/data/data_eda.csv", sep = ",", na = "", row.names = F)
-write.table(data_no_na, "C:/Users/keimp/Cirrhosis_Prediction/data/data_eda_no_na.csv", sep = ",", na = "", row.names = F)
-
-
 ```
 
 
+## ML model comparison
 
-
-```{r}
+```{r, echo=FALSE}
 comparison <- read.csv("./data/test_results/comparison_results.csv", sep=";")
 rownames(comparison) <- comparison[,1]
 comparison[,1] <- NULL
-comparison
+kable(comparison)
 ```
 
-```{r}
+```{r, echo=FALSE}
 comparison_numeric <- read.csv("./data/test_results/comparison_results_numeric.csv", sep=";")
 rownames(comparison_numeric) <- comparison_numeric[,1]
 comparison_numeric[,1] <- NULL
@@ -402,8 +364,148 @@ comparison_numeric <- t(comparison_numeric)
 comparison_numeric <- as.data.frame( comparison_numeric)
 
 ggplot(data=comparison_numeric, aes(x=rownames(comparison_numeric), y=percent_correct, fill=rownames(comparison_numeric))) +
-  geom_bar(stat="identity") + theme(axis.text.x = element_blank()) + scale_fill_manual(values=c(hue_pal()(20))) + geom_hline(yintercept = comparison_numeric[1,1], linetype = "dashed")
+  geom_bar(stat="identity") + theme(axis.text.x = element_blank()) + scale_fill_manual(values=c(hue_pal()(20)), name = "ML models") + geom_hline(yintercept = comparison_numeric[1,1], linetype = "dashed") + xlab("ML models") + ggtitle("Percent correct of different machine learning algorithms")
 ```
+
+```{r, echo=FALSE}
+ggplot(data=comparison_numeric, aes(x=rownames(comparison_numeric), y=area_under_roc, fill=rownames(comparison_numeric))) +
+  geom_bar(stat="identity") + theme(axis.text.x = element_blank()) + scale_fill_manual(values=c(hue_pal()(20)), name = "ML models") + geom_hline(yintercept = comparison_numeric[1,2], linetype = "dashed") + xlab("ML models") + ggtitle("Area under roc of different machine learning algorithms")
+```
+
+
+### Naive bayes
+
+Comparison of different Naïve bayes algorithms.
+
+```{r, echo=FALSE}
+bayes_comparison <- read.csv("./data/test_results/bayes_comparison.csv", sep=";")
+rownames(bayes_comparison) <- bayes_comparison[,1]
+bayes_comparison[,1] <- NULL
+kable(bayes_comparison)
+```
+no significant difference
+
+```{r, echo=FALSE}
+bayes_meta_comparison <- read.csv("./data/test_results/bayes_meta_comparison.csv", sep=";")
+rownames(bayes_meta_comparison) <- bayes_meta_comparison[,1]
+bayes_meta_comparison[,1] <- NULL
+kable(bayes_meta_comparison)
+```
+
+
+### SMO
+
+
+```{r, echo=FALSE}
+smo_meta_comparison <- read.csv("./data/test_results/smo_meta_comparison.csv", sep=";")
+rownames(smo_meta_comparison) <- smo_meta_comparison[,1]
+smo_meta_comparison[,1] <- NULL
+kable(smo_meta_comparison)
+```
+
+
+### Random forest
+
+
+```{r, echo=FALSE}
+rf_meta_comparison <- read.csv("./data/test_results/rf_meta_comparison.csv", sep=";")
+rownames(rf_meta_comparison) <- rf_meta_comparison[,1]
+rf_meta_comparison[,1] <- NULL
+kable(rf_meta_comparison)
+```
+
+
+### Simple logistic
+
+
+```{r, echo=FALSE}
+sl_meta_comparison <- read.csv("./data/test_results/sl_meta_comparison.csv", sep=";")
+rownames(sl_meta_comparison) <- sl_meta_comparison[,1]
+sl_meta_comparison[,1] <- NULL
+kable(sl_meta_comparison)
+```
+
+
+
+### Choice
+We choose to build upon the naïve bayes algorithm.
+It shows the highest area under the roc and has the second highest percent correct of all the algorithms.
+Furthermore, none of the meta learners seem to create a significant increase in accuracy.
+
+But the percent correct is really not what is it expected to be.
+The discrepancy between the area under the roc and the percent correct is explained by the fact that the weka
+gui by default only show the roc of the last class label.
+Therefore we will transform the dataset where there will be two class labels, yes and no.
+Referring to whether cirrhosis is present or not.
+We do this because determining the exact stage of pbc will be unfeasible with this dataset.
+
+We read the data again, log-transform it and delete the ID and state attributes.
+We do not have to normalize the data again since we wont be comparing it anymore.
+Then we alter the class attribute.
+
+
+```{r, echo=FALSE}
+data_single_class <- read.csv("./data/cirrhosis.csv")
+data_single_class <- data_single_class[,2:20]
+data_single_class <- subset(data_single_class, select = -Status)
+data_single_class <- data_single_class[!is.na(data_single_class$Stage),]
+data_single_class[,c(10,11:18)] <- log(data_single_class[,c(10,11:18)])
+
+data_single_class["Stage"][data_single_class["Stage"] == 1] <- "no"
+data_single_class["Stage"][data_single_class["Stage"] == 2] <- "no"
+data_single_class["Stage"][data_single_class["Stage"] == 3] <- "no"
+data_single_class["Stage"][data_single_class["Stage"] == 4] <- "yes"
+
+write.table(data_single_class, "C:/Users/keimp/Cirrhosis_Prediction/data/data_single_class.csv", sep = ",", na = "", row.names = F)
+```
+
+
+## Results ML
+
+=== Summary ===
+
+Correctly Classified Instances         313               75.9709 %
+
+Incorrectly Classified Instances        99               24.0291 %
+
+Kappa statistic                          0.469 
+
+Mean absolute error                      0.2726
+
+Root mean squared error                  0.4368
+
+Relative absolute error                 59.9203 %
+
+Root relative squared error             91.5961 %
+
+Total Number of Instances              412     
+
+
+=== Detailed Accuracy By Class ===
+
+                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+                 0,646    0,179    0,660      0,646    0,653      0,469    0,803     0,689     yes
+                 0,821    0,354    0,812      0,821    0,816      0,469    0,803     0,880     no
+Weighted Avg.    0,760    0,293    0,759      0,760    0,759      0,469    0,803     0,813     
+
+=== Confusion Matrix ===
+
+   a   b   <-- classified as
+   
+  93  51 |   a = yes
+  
+  48 220 |   b = no
+
+
+Above we see results of the naïve bayes algorithm on the altered dataset.
+It shows a very big improvement over the previous dataset, with an percent correct of 
+almost 76%.
+
+
+![ROC curve of the naïve bayes algorithm](roc_curve.png)
+
+
+
 
 
 
