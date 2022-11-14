@@ -1,0 +1,24 @@
+@relation data_eda_single_class
+
+@attribute N_Days numeric
+@attribute Drug {D-penicillamine,Placebo}
+@attribute Age numeric
+@attribute Sex {F,M}
+@attribute Ascites {Y,N}
+@attribute Hepatomegaly {Y,N}
+@attribute Spiders {Y,N}
+@attribute Edema {Y,N,S}
+@attribute Bilirubin numeric
+@attribute Cholesterol numeric
+@attribute Albumin numeric
+@attribute Copper numeric
+@attribute Alk_Phos numeric
+@attribute SGOT numeric
+@attribute Tryglicerides numeric
+@attribute Platelets numeric
+@attribute Prothrombin numeric
+@attribute Stage {yes,no}
+
+@data
+400,D-penicillamine,21464,F,Y,Y,Y,Y,2.674149,5.56452,0.955511,5.049856,7.448916,4.926891,5.147494,5.247024,2.501436,?
+4500,D-penicillamine,20617,F,N,Y,Y,N,0.09531,5.710427,1.420696,3.988984,8.908532,4.731979,4.477337,5.398163,2.360854,?

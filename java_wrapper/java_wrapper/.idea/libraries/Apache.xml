@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Apache">
+    <CLASSES />
+    <JAVADOC>
+      <root url="file://$PROJECT_DIR$/../../../../../Apache/commons-cli-1.5.0-bin/commons-cli-1.5.0/apidocs" />
+    </JAVADOC>
+    <SOURCES />
+  </library>
+</component>
