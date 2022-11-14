@@ -12,7 +12,7 @@ This consited of cleaning the data and looking for meaningful correlations.
 We also researched and tested vaious machine learning algorithms, one of these was used for our eventual model.
 This can all be found in the logbook.Rmd file.
 
-## Java applicaten
+## Java application
 The third part is a java wrapper around the model.
 Through this a new instances can be predicted through the commandline interface.
 
